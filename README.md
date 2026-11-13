@@ -108,89 +108,84 @@ The algorithm maintains simulated battery parameters such as battery capacity, s
 
 This approach demonstrates how renewable energy utilization and battery storage can help reduce dependence on grid electricity.
 
-## 7. Software Dashboard
+### 7. Load Prediction Using Random Forest Regression
 
-A software dashboard prototype was developed separately to provide a visual representation of the energy management system.
+The project incorporates a machine learning-based load prediction module using a **Random Forest Regressor** to estimate energy consumption based on historical consumption patterns and engineered features.
 
-The dashboard focuses on displaying:
-- Energy consumption and predicted demand.
-- Solar energy generation and utilization.
-- Battery charge status.
-- Grid energy consumption.
-- Energy source allocation.
-- Load management status.
+The prediction process is implemented in `predict.py`.
 
-The dashboard demonstrates how machine learning predictions and energy management logic can be presented in an understandable format.
+**Prediction workflow:**
 
-The dashboard is a software simulation and does not receive live readings from physical solar panels, batteries, or electrical sensors.
+1. Load the feature-engineered dataset using Pandas.
+2. Load the previously trained Random Forest model from the `models/` directory using Joblib.
+3. Select the required input features used during model training.
+4. Extract the latest 24 records from the feature-engineered dataset.
+5. Pass these records to the trained model using `model.predict()`.
+6. Generate predicted energy consumption values.
+7. Compare actual and predicted consumption values.
+8. Export the prediction results into a CSV file for further analysis.
 
-## 8. Repository Structure
+**Input Features**
 
-```text
-Smart-Energy-Management-System/
-│
-├── load_data.py
-├── eda.py
-├── create_features.py
-├── train_model.py
-├── predict.py
-├── energy_management.py
-├── test.py
-│
-├── data/
-│   ├── energy_consumption.csv
-│   ├── cleaned_energy_consumption.parquet
-│   └── features_energy_consumption.parquet
-│
-├── models/
-│   └── energy_prediction_model.pkl
-│
-└── results/
-    ├── energy_predictions.csv
-    └── ems_results.csv
-```
+The prediction script uses the following ten features:
 
-*Note: The data, models, and results folders represent the expected working-directory structure. These generated files are not currently included in the public repository.*
+- Hour
+- Day of the week
+- Month
+- Lag features
+- Rolling statistics
+- Other engineered time-based features
 
-## 9. Installation and Setup
+The prediction inputs must follow the same feature structure and ordering used during model training.
 
-Clone the repository:
+**Prediction Output**
 
-```bash
-git clone https://github.com/nandiniiibansal/Smart-Energy-Management-System.git
-```
+The script generates actual-versus-predicted consumption results and saves them in:
 
-Navigate to the project directory:
+`results/energy_predictions.csv`
 
-```bash
-cd Smart-Energy-Management-System
-```
+This output can be used for further analysis and visualization.
 
-Install the required Python libraries:
+### 8. Prediction Pipeline Implementation
 
-```bash
-pip install pandas numpy scikit-learn matplotlib joblib pyarrow
-```
+The prediction module is implemented separately from model training to maintain a modular machine learning workflow.
 
-Place the electricity consumption dataset inside the `data/` directory with the filename:
-
-```text
-energy_consumption.csv
-```
-
-## 10. Project Implementation Files
-
-| File | Purpose |
+| Component | Function |
 |---|---|
-| `load_data.py` | Loads, preprocesses and cleans electricity consumption data. |
-| `eda.py` | Performs exploratory data analysis and visualizes consumption patterns. |
-| `create_features.py` | Generates time-based, lag and rolling-average features. |
-| `train_model.py` | Trains and evaluates the Random Forest Regression model. |
-| `predict.py` | Reserved for the prediction stage; implementation is currently incomplete. |
-| `energy_management.py` | Implements the simulated solar-battery-grid energy allocation algorithm. |
-| `test.py` | Testing and experimentation. |
+| `train_model.py` | Trains the Random Forest Regression model |
+| `predict.py` | Loads the trained model and generates predictions |
+| `create_features.py` | Generates time-based and lag-based features |
+| `results/energy_predictions.csv` | Stores actual and predicted consumption values |
 
-**Implementation status:** Data preprocessing, feature engineering, model training and energy management logic are present in the repository. The prediction stage and complete end-to-end execution pipeline are still being integrated.
+This separation allows the trained model to be reused for generating predictions without retraining it every time.
+
+### 9. Generated Outputs
+
+The project generates the following outputs:
+
+- Trained Random Forest model stored for reuse.
+- Actual and predicted energy consumption values.
+- CSV file containing prediction results.
+- Model evaluation metrics generated during training, including MAE, RMSE and R².
+
+The prediction results are stored in the `results/` directory.
+
+### 10. Current Implementation Status
+
+The project currently includes:
+
+- Historical energy data preprocessing.
+- Exploratory Data Analysis (EDA).
+- Feature engineering and creation of time-based features.
+- Random Forest Regression model training.
+- Model evaluation using MAE, RMSE and R².
+- Model loading and prediction using `predict.py`.
+- Prediction of energy consumption for the latest 24 available records.
+- Comparison of actual and predicted values.
+- Export of prediction results to CSV.
+- Energy management simulation using solar, battery and grid supply logic.
+
+The interactive dashboard is a separately developed team component and is not part of the core prediction script.
 
 ## 11. Limitations and Future Scope
 
